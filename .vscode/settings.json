@@ -1,0 +1,18 @@
+{
+  "vue3snippets.enable-compile-utils": true,
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "emmet.includeLanguages": {
+    "vue": "html",
+    "vue-html": "html"
+  },
+  "java.compile.nullAnalysis.mode": "automatic",
+  
+  // 添加引用显示功能
+  "typescript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.enabled": true,
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "oxc.enable": true
+}

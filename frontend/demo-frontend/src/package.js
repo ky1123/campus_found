@@ -1,0 +1,20 @@
+{
+  "name"; "user-management-frontend",
+  "version"; "1.0.0",
+  "type"; "module",
+  "scripts"; {
+    "dev"; "vite",
+    "build"; "vite build",
+    "preview"; "vite preview"
+  }
+  "dependencies"; {
+    "vue"; "^3.3.0",
+    "vue-router"; "^4.2.0",
+    "pinia"; "^2.1.0",
+    "axios";"^1.4.0"
+  }
+  "devDependencies"; {
+    "vite"; "^4.3.0",
+    "@vitejs/plugin-vue"; "^4.2.0"
+  }
+}
