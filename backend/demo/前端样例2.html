@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>失物招领平台</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #3498db;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            padding: 40px 0;
+            min-height: calc(100vh - 140px);
+        }
+
+        .page {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .card-body {
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        /* 状态标签 */
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-lost {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .status-found {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .status-pending {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .status-confirmed {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        /* 服务器配置区域 */
+        .server-config {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .server-config h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .server-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .status-connected {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .status-disconnected {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* 图片预览 */
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* 匹配分数显示 */
+        .match-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* 页脚 */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">失物招领平台</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="home">首页</a>
+                <a href="#" class="nav-link" data-page="lost-items">丢失物品</a>
+                <a href="#" class="nav-link" data-page="found-items">拾获物品</a>
+                <a href="#" class="nav-link" data-page="matches" id="matches-link" style="display:none;">匹配记录</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn btn-primary" id="login-btn">登录</button>
+                <button class="btn btn-secondary" id="register-btn">注册</button>
+                <button class="btn btn-secondary" id="logout-btn" style="display:none;">退出</button>
+                <span id="user-info" style="display:none; color:white;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="container">
+            <!-- 服务器配置区域 -->
+            <div class="server-config">
+                <h3>服务器配置</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="server-ip">服务器IP</label>
+                        <input type="text" id="server-ip" placeholder="例如: 192.168.1.100 或 localhost">
+                    </div>
+                    <div class="form-group">
+                        <label for="server-port">端口</label>
+                        <input type="text" id="server-port" placeholder="例如: 8080">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button class="btn btn-success" id="connect-btn">连接服务器</button>
+                        <span id="connection-status" class="server-status status-disconnected">未连接</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 首页 -->
+            <div class="page active" id="home">
+                <h1>欢迎使用失物招领平台</h1>
+                <p>这是一个帮助人们找回丢失物品的平台。您可以发布丢失物品信息，也可以发布拾获物品信息，系统会自动为您匹配。</p>
+
+                <div class="form-row" style="margin-top: 30px;">
+                    <div class="card" style="text-align: center; cursor: pointer;" data-page="report-lost">
+                        <h2>丢失物品</h2>
+                        <p>如果您丢失了物品，请点击这里发布信息</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; cursor: pointer;" data-page="report-found">
+                        <h2>拾获物品</h2>
+                        <p>如果您拾获了物品，请点击这里发布信息</p>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 40px;">最新匹配</h2>
+                <div id="recent-matches">
+                    <!-- 动态加载最新匹配 -->
+                </div>
+            </div>
+
+            <!-- 注册页面 -->
+            <div class="page" id="register">
+                <h1>用户注册</h1>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-name">用户名 *</label>
+                        <input type="text" id="reg-name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">密码 *</label>
+                        <input type="password" id="reg-password" name="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phone">手机号 *</label>
+                        <input type="tel" id="reg-phone" name="phoneNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-contact">其他联系方式</label>
+                        <input type="text" id="reg-contact" name="otherContact">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">注册</button>
+                </form>
+            </div>
+
+            <!-- 登录页面 -->
+            <div class="page" id="login">
+                <h1>用户登录</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-name">用户名</label>
+                        <input type="text" id="login-name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">登录</button>
+                </form>
+            </div>
+
+            <!-- 发布丢失物品 -->
+            <div class="page" id="report-lost">
+                <h1>发布丢失物品</h1>
+                <form id="lost-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="lost-name">物品名称 *</label>
+                        <input type="text" id="lost-name" name="itemName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lost-description">物品描述 *</label>
+                        <textarea id="lost-description" name="description" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lost-category">物品分类 *</label>
+                        <select id="lost-category" name="category" required>
+                            <option value="">请选择分类</option>
+                            <option value="电子设备">电子设备</option>
+                            <option value="钱包/卡包">钱包/卡包</option>
+                            <option value="钥匙">钥匙</option>
+                            <option value="衣物">衣物</option>
+                            <option value="书籍">书籍</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lost-location">丢失地点 *</label>
+                            <input type="text" id="lost-location" name="lostLocation" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lost-time">丢失时间 *</label>
+                            <input type="datetime-local" id="lost-time" name="lostTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lost-phone">联系电话 *</label>
+                        <input type="tel" id="lost-phone" name="contactPhone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lost-image">物品图片</label>
+                        <input type="file" id="lost-image" name="image" accept="image/*">
+                        <img id="lost-preview" class="image-preview">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">发布丢失信息</button>
+                </form>
+            </div>
+
+            <!-- 发布拾获物品 -->
+            <div class="page" id="report-found">
+                <h1>发布拾获物品</h1>
+                <form id="found-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="found-name">物品名称 *</label>
+                        <input type="text" id="found-name" name="itemName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="found-description">物品描述 *</label>
+                        <textarea id="found-description" name="description" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="found-category">物品分类 *</label>
+                        <select id="found-category" name="category" required>
+                            <option value="">请选择分类</option>
+                            <option value="电子设备">电子设备</option>
+                            <option value="钱包/卡包">钱包/卡包</option>
+                            <option value="钥匙">钥匙</option>
+                            <option value="衣物">衣物</option>
+                            <option value="书籍">书籍</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="found-location">拾获地点 *</label>
+                            <input type="text" id="found-location" name="foundLocation" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="found-time">拾获时间 *</label>
+                            <input type="datetime-local" id="found-time" name="foundTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="found-image">物品图片</label>
+                        <input type="file" id="found-image" name="image" accept="image/*">
+                        <img id="found-preview" class="image-preview">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">发布拾获信息</button>
+                </form>
+            </div>
+
+            <!-- 匹配记录页面 -->
+            <div class="page" id="matches">
+                <h1>匹配记录</h1>
+                <div id="matches-list">
+                    <!-- 动态加载匹配记录 -->
+                </div>
+            </div>
+
+            <!-- 丢失物品列表 -->
+            <div class="page" id="lost-items">
+                <h1>丢失物品列表</h1>
+                <div id="lost-items-list">
+                    <!-- 动态加载丢失物品 -->
+                </div>
+            </div>
+
+            <!-- 拾获物品列表 -->
+            <div class="page" id="found-items">
+                <h1>拾获物品列表</h1>
+                <div id="found-items-list">
+                    <!-- 动态加载拾获物品 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 失物招领平台 - 帮助您找回丢失的物品</p>
+        </div>
+    </footer>
+
+    <script>
+        // 动态API基础URL - 用户可配置
+        let API_BASE_URL = '';
+
+        // 当前登录用户信息
+        let currentUser = null;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 从本地存储加载服务器配置
+            loadServerConfig();
+
+            // 检查是否已登录
+            checkLoginStatus();
+
+            // 绑定导航链接事件
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showPage(this.getAttribute('data-page'));
+                });
+            });
+
+            // 绑定首页卡片点击事件
+            document.querySelectorAll('.card[data-page]').forEach(card => {
+                card.addEventListener('click', function () {
+                    showPage(this.getAttribute('data-page'));
+                });
+            });
+
+            // 绑定认证按钮事件
+            document.getElementById('login-btn').addEventListener('click', function () {
+                showPage('login');
+            });
+
+            document.getElementById('register-btn').addEventListener('click', function () {
+                showPage('register');
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', function () {
+                logout();
+            });
+
+            // 绑定服务器连接按钮事件
+            document.getElementById('connect-btn').addEventListener('click', function () {
+                connectToServer();
+            });
+
+            // 绑定表单提交事件
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('lost-form').addEventListener('submit', handleLostItem);
+            document.getElementById('found-form').addEventListener('submit', handleFoundItem);
+
+            // 绑定图片预览事件
+            document.getElementById('lost-image').addEventListener('change', function (e) {
+                previewImage(e.target, 'lost-preview');
+            });
+
+            document.getElementById('found-image').addEventListener('change', function (e) {
+                previewImage(e.target, 'found-preview');
+            });
+
+            // 加载初始数据
+            if (API_BASE_URL) {
+                loadRecentMatches();
+                loadLostItems();
+                loadFoundItems();
+            }
+        });
+
+        // 加载服务器配置
+        function loadServerConfig() {
+            const savedIp = localStorage.getItem('serverIp');
+            const savedPort = localStorage.getItem('serverPort');
+
+            if (savedIp && savedPort) {
+                document.getElementById('server-ip').value = savedIp;
+                document.getElementById('server-port').value = savedPort;
+                updateApiBaseUrl(savedIp, savedPort);
+            }
+        }
+
+        // 更新API基础URL
+        function updateApiBaseUrl(ip, port) {
+            API_BASE_URL = `http://${ip}:${port}/api`;
+            console.log('API基础URL已更新:', API_BASE_URL);
+        }
+
+        // 连接服务器
+        function connectToServer() {
+            const ip = document.getElementById('server-ip').value.trim();
+            const port = document.getElementById('server-port').value.trim();
+
+            if (!ip || !port) {
+                alert('请输入服务器IP和端口');
+                return;
+            }
+
+            // 保存到本地存储
+            localStorage.setItem('serverIp', ip);
+            localStorage.setItem('serverPort', port);
+
+            updateApiBaseUrl(ip, port);
+
+            // 测试连接
+            testConnection()
+                .then(() => {
+                    document.getElementById('connection-status').textContent = '已连接';
+                    document.getElementById('connection-status').className = 'server-status status-connected';
+                    alert('服务器连接成功！');
+
+                    // 重新加载数据
+                    loadRecentMatches();
+                    loadLostItems();
+                    loadFoundItems();
+                })
+                .catch(error => {
+                    document.getElementById('connection-status').textContent = '连接失败';
+                    document.getElementById('connection-status').className = 'server-status status-disconnected';
+                    alert('服务器连接失败: ' + error.message);
+                });
+        }
+
+        // 测试服务器连接
+        async function testConnection() {
+            if (!API_BASE_URL) {
+                throw new Error('请先配置服务器地址');
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`服务器响应错误: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                throw new Error(`无法连接到服务器: ${error.message}`);
+            }
+        }
+
+        // 通用请求函数
+        async function apiRequest(endpoint, options = {}) {
+            if (!API_BASE_URL) {
+                throw new Error('请先配置服务器地址并连接');
+            }
+
+            const url = `${API_BASE_URL}${endpoint}`;
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            };
+
+            // 添加认证token
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+
+            try {
+                const response = await fetch(url, config);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `请求失败: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API请求失败:', error);
+                throw error;
+            }
+        }
+
+        // 文件上传请求
+        async function apiFileUpload(endpoint, formData) {
+            if (!API_BASE_URL) {
+                throw new Error('请先配置服务器地址并连接');
+            }
+
+            const url = `${API_BASE_URL}${endpoint}`;
+            const token = localStorage.getItem('authToken');
+
+            const config = {
+                method: 'POST',
+                body: formData
+            };
+
+            if (token) {
+                config.headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+
+            try {
+                const response = await fetch(url, config);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `上传失败: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('文件上传失败:', error);
+                throw error;
+            }
+        }
+
+        // 显示指定页面
+        function showPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // 显示目标页面
+            document.getElementById(pageId).classList.add('active');
+
+            // 更新导航激活状态
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // 特殊页面逻辑
+            if (pageId === 'matches') {
+                loadUserMatches();
+            }
+        }
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // 验证token有效性
+                apiRequest('/users/me')
+                    .then(user => {
+                        currentUser = user;
+                        updateUIForLoggedInUser();
+                    })
+                    .catch(error => {
+                        console.error('验证登录状态失败:', error);
+                        localStorage.removeItem('authToken');
+                    });
+            }
+        }
+
+        // 更新UI为已登录状态
+        function updateUIForLoggedInUser() {
+            document.getElementById('login-btn').style.display = 'none';
+            document.getElementById('register-btn').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'inline-block';
+            document.getElementById('user-info').style.display = 'inline-block';
+            document.getElementById('user-info').textContent = `欢迎，${currentUser.name}`;
+            document.getElementById('matches-link').style.display = 'block';
+        }
+
+        // 更新UI为未登录状态
+        function updateUIForLoggedOutUser() {
+            document.getElementById('login-btn').style.display = 'inline-block';
+            document.getElementById('register-btn').style.display = 'inline-block';
+            document.getElementById('logout-btn').style.display = 'none';
+            document.getElementById('user-info').style.display = 'none';
+            document.getElementById('matches-link').style.display = 'none';
+        }
+
+        // 处理用户注册
+        function handleRegister(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            apiRequest('/auth/register', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+                .then(result => {
+                    alert('注册成功！请登录');
+                    showPage('login');
+                    e.target.reset();
+                })
+                .catch(error => {
+                    alert('注册失败: ' + error.message);
+                });
+        }
+
+        // 处理用户登录
+        function handleLogin(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            apiRequest('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+                .then(result => {
+                    // 保存token到localStorage
+                    localStorage.setItem('authToken', result.token);
+                    currentUser = result.user;
+                    updateUIForLoggedInUser();
+                    alert('登录成功！');
+                    showPage('home');
+                    e.target.reset();
+                })
+                .catch(error => {
+                    alert('登录失败: ' + error.message);
+                });
+        }
+
+        // 处理发布丢失物品
+        function handleLostItem(e) {
+            e.preventDefault();
+
+            if (!currentUser) {
+                alert('请先登录');
+                showPage('login');
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            formData.append('ownerUserId', currentUser.id);
+
+            apiFileUpload('/lost-records', formData)
+                .then(result => {
+                    alert('丢失物品信息发布成功！');
+                    e.target.reset();
+                    document.getElementById('lost-preview').style.display = 'none';
+                    loadLostItems();
+                    showPage('lost-items');
+                })
+                .catch(error => {
+                    alert('发布失败: ' + error.message);
+                });
+        }
+
+        // 处理发布拾获物品
+        function handleFoundItem(e) {
+            e.preventDefault();
+
+            if (!currentUser) {
+                alert('请先登录');
+                showPage('login');
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            formData.append('finderUserId', currentUser.id);
+
+            apiFileUpload('/items', formData)
+                .then(result => {
+                    alert('拾获物品信息发布成功！');
+                    e.target.reset();
+                    document.getElementById('found-preview').style.display = 'none';
+                    loadFoundItems();
+                    showPage('found-items');
+                })
+                .catch(error => {
+                    alert('发布失败: ' + error.message);
+                });
+        }
+
+        // 加载最近匹配
+        function loadRecentMatches() {
+            apiRequest('/matches?size=3')
+                .then(matches => {
+                    const container = document.getElementById('recent-matches');
+                    container.innerHTML = '';
+
+                    if (matches.length === 0) {
+                        container.innerHTML = '<p>暂无匹配记录</p>';
+                        return;
+                    }
+
+                    matches.forEach(match => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        const matchScore = document.createElement('div');
+                        matchScore.className = 'match-score';
+                        matchScore.textContent = `${match.matchScore}%`;
+
+                        const content = document.createElement('div');
+                        content.className = 'card-body';
+                        content.innerHTML = `
+                        <p><strong>丢失物品:</strong> ${match.lostRecord.itemName}</p>
+                        <p><strong>拾获物品:</strong> ${match.foundItem.itemName}</p>
+                        <p><strong>匹配状态:</strong> <span class="status status-${match.status.toLowerCase()}">${match.status}</span></p>
+                    `;
+
+                        card.appendChild(matchScore);
+                        card.appendChild(content);
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载最近匹配失败:', error);
+                    document.getElementById('recent-matches').innerHTML = '<p>加载匹配记录失败，请检查服务器连接</p>';
+                });
+        }
+
+        // 加载用户匹配记录
+        function loadUserMatches() {
+            if (!currentUser) {
+                document.getElementById('matches-list').innerHTML = '<p>请先登录查看匹配记录</p>';
+                return;
+            }
+
+            apiRequest(`/users/${currentUser.id}/matches`)
+                .then(matches => {
+                    const container = document.getElementById('matches-list');
+                    container.innerHTML = '';
+
+                    if (matches.length === 0) {
+                        container.innerHTML = '<p>暂无匹配记录</p>';
+                        return;
+                    }
+
+                    matches.forEach(match => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        const header = document.createElement('div');
+                        header.className = 'card-header';
+                        header.innerHTML = `
+                        <div class="card-title">匹配 #${match.id}</div>
+                        <div class="match-score">${match.matchScore}%</div>
+                    `;
+
+                        const body = document.createElement('div');
+                        body.className = 'card-body';
+                        body.innerHTML = `
+                        <p><strong>丢失物品:</strong> ${match.lostRecord.itemName} (${match.lostRecord.category})</p>
+                        <p><strong>丢失地点:</strong> ${match.lostRecord.lostLocation}</p>
+                        <p><strong>拾获物品:</strong> ${match.foundItem.itemName} (${match.foundItem.category})</p>
+                        <p><strong>拾获地点:</strong> ${match.foundItem.foundLocation}</p>
+                        ${match.matchReasons ? `<p><strong>匹配原因:</strong> ${match.matchReasons.join(', ')}</p>` : ''}
+                    `;
+
+                        const footer = document.createElement('div');
+                        footer.className = 'card-footer';
+                        footer.innerHTML = `
+                        <div>
+                            <span class="status status-${match.status.toLowerCase()}">${match.status}</span>
+                        </div>
+                        <div>
+                            ${match.status === 'PENDING' ? `
+                                <button class="btn btn-primary" onclick="confirmMatch(${match.id})">确认匹配</button>
+                                <button class="btn btn-secondary" onclick="rejectMatch(${match.id})">拒绝匹配</button>
+                            ` : ''}
+                        </div>
+                    `;
+
+                        card.appendChild(header);
+                        card.appendChild(body);
+                        card.appendChild(footer);
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载用户匹配记录失败:', error);
+                    document.getElementById('matches-list').innerHTML = '<p>加载匹配记录失败</p>';
+                });
+        }
+
+        // 加载丢失物品列表
+        function loadLostItems() {
+            apiRequest('/lost-records')
+                .then(items => {
+                    const container = document.getElementById('lost-items-list');
+                    container.innerHTML = '';
+
+                    if (items.length === 0) {
+                        container.innerHTML = '<p>暂无丢失物品记录</p>';
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">${item.itemName}</div>
+                            <span class="status status-lost">${item.status}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>分类:</strong> ${item.category}</p>
+                            <p><strong>描述:</strong> ${item.description}</p>
+                            <p><strong>丢失地点:</strong> ${item.lostLocation}</p>
+                            <p><strong>丢失时间:</strong> ${new Date(item.lostTime).toLocaleString()}</p>
+                            <p><strong>联系电话:</strong> ${item.contactPhone}</p>
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" style="max-width: 200px; margin-top: 10px;">` : ''}
+                        </div>
+                        <div class="card-footer">
+                            <small>发布时间: ${new Date(item.createdAt).toLocaleString()}</small>
+                        </div>
+                    `;
+
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载丢失物品失败:', error);
+                    document.getElementById('lost-items-list').innerHTML = '<p>加载丢失物品失败，请检查服务器连接</p>';
+                });
+        }
+
+        // 加载拾获物品列表
+        function loadFoundItems() {
+            apiRequest('/items')
+                .then(items => {
+                    const container = document.getElementById('found-items-list');
+                    container.innerHTML = '';
+
+                    if (items.length === 0) {
+                        container.innerHTML = '<p>暂无拾获物品记录</p>';
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-title">${item.itemName}</div>
+                            <span class="status status-found">${item.status}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>分类:</strong> ${item.category}</p>
+                            <p><strong>描述:</strong> ${item.description}</p>
+                            <p><strong>拾获地点:</strong> ${item.foundLocation}</p>
+                            <p><strong>拾获时间:</strong> ${new Date(item.foundTime).toLocaleString()}</p>
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" style="max-width: 200px; margin-top: 10px;">` : ''}
+                        </div>
+                        <div class="card-footer">
+                            <small>发布时间: ${new Date(item.createdAt).toLocaleString()}</small>
+                        </div>
+                    `;
+
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载拾获物品失败:', error);
+                    document.getElementById('found-items-list').innerHTML = '<p>加载拾获物品失败，请检查服务器连接</p>';
+                });
+        }
+
+        // 确认匹配
+        function confirmMatch(matchId) {
+            apiRequest(`/matches/${matchId}/confirm`, {
+                method: 'PATCH'
+            })
+                .then(() => {
+                    alert('匹配确认成功！');
+                    loadUserMatches();
+                })
+                .catch(error => {
+                    console.error('确认匹配失败:', error);
+                    alert('确认匹配失败: ' + error.message);
+                });
+        }
+
+        // 拒绝匹配
+        function rejectMatch(matchId) {
+            apiRequest(`/matches/${matchId}/reject`, {
+                method: 'PATCH'
+            })
+                .then(() => {
+                    alert('匹配已拒绝');
+                    loadUserMatches();
+                })
+                .catch(error => {
+                    console.error('拒绝匹配失败:', error);
+                    alert('拒绝匹配失败: ' + error.message);
+                });
+        }
+
+        // 图片预览
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('authToken');
+            currentUser = null;
+            updateUIForLoggedOutUser();
+            alert('已退出登录');
+            showPage('home');
+        }
+    </script>
+</body>
+
+</html>
